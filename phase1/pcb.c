@@ -14,7 +14,6 @@ void initPcbs()
       kitem_t *item=container_of(pos, kitem_t, list);
       list_add(pos,pcbFree_h);
     }
-
 }
 
 void freePcb(pcb_t* p)
@@ -50,11 +49,12 @@ pcb_t* allocPcb()
 
 void mkEmptyProcQ(struct list_head* head)
 {
-
+  head=&LIST_HEAD_INIT(process_queue);
 }
 
 int emptyProcQ(struct list_head* head)
 {
+  return list_empty(head);
 }
 
 void insertProcQ(struct list_head* head, pcb_t* p)
