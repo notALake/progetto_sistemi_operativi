@@ -41,8 +41,16 @@ pcb_t* allocPcb()
     p->p_supportStruct=NULL;
     p->p_prio=0;
 
-    //todo: inizializzare i valori di p_s, non so quali siano i valori corretti
-    // memset(&p->p_s, 0, sizeof(state_t));
+    p->p_s.entry_hi=0;
+    p->p_s.cause=0;
+    p->p_s.status=0;
+    p->p_s.pc_epc=0;
+    p->p_s.mie=0;
+
+    for(int c=0; c<STATE_GPR_LEN; c++)
+    {
+      p->p_s.gpr[c]=0;
+    }
 
     return p;
   }
