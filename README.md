@@ -26,3 +26,9 @@ cmake --build build
 
 Nota: per la fase 1 dobbiamo implementari alcuni metodi e alcune strutture, ma nella cartella /header
 abbiamo già a dispozione alcuni metodi da utilizzare, forniti dai docenti
+
+infine si consiglia di creare una file .gitignore indicando:
+build/
+CmakeList.txt
+
+in modo da non creare conflitti con gli altri
