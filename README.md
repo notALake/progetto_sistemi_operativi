@@ -10,7 +10,7 @@ Questo è il REPO per il progetto di sistemi operativi dell'anno scolastico 2025
 
 scaricare starterkit.tar.gz
 ```bash
-tar -xfv starterkit.tar.gz
+tar -xvf starterkit.tar.gz
 ```
 
 modificare il file CmakeList.txt a seconda delle directory in cui è installato uriscv
