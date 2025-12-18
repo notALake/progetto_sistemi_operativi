@@ -83,6 +83,9 @@ void insertProcQ(struct list_head* head, pcb_t* p)
 
 pcb_t* headProcQ(struct list_head* head)
 {
+  if(list_empty(head)){return NULL;}
+  pcb_t* p = container_of(head->next, pcb_t, p_list);
+  return p;
 }
 
 pcb_t* removeProcQ(struct list_head* head)
