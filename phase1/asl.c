@@ -28,6 +28,7 @@ int insertBlocked(int* semAdd, pcb_t* p)
     if(*(item->s_key)==*semAdd)
     {
       list_add_tail(&p->p_list, &item->s_procq);
+      *(p->p_semAdd)=*semAdd;
       found=1;
       return 0;
     }
@@ -50,6 +51,7 @@ int insertBlocked(int* semAdd, pcb_t* p)
       descriptor.s_key=semAdd;
       list_add(&(descriptor.s_link), &semd_h);
       list_add_tail(&p->p_list, &descriptor.s_procq);
+      *(p->p_semAdd)=*semAdd;
       return 0;
     }
   }
@@ -57,6 +59,15 @@ int insertBlocked(int* semAdd, pcb_t* p)
 
 pcb_t* removeBlocked(int* semAdd)
 {
+  /* 
+   * come definito dal progetto, un semaforo è attivo se contiene almeno un
+   * processo nella s_procq
+   * se semd_h risulta vuota allora non eiste un semaforo contenente con s_key==semAdd
+   * tale che esso contenga un processo da rimuovere da s_procq
+  */
+  if(list_empty(&semd_h))
+    return NULL;
+
   struct list_head *iter;
 
   list_for_each(iter, &semd_h)
@@ -64,16 +75,13 @@ pcb_t* removeBlocked(int* semAdd)
     semd_t *item=container_of(iter, semd_t, s_link);
     if(*(item->s_key)==*semAdd)
     {
-      struct list_head *free=(&item->s_procq);
-      list_del(free);
+      pcb_t *p=removeProcQ(&item->s_procq);
 
       if(list_empty(&item->s_procq))
       {
         list_del(iter);
         list_add(iter, &semdFree_h);
       }
-
-      pcb_t *p=container_of(free,pcb_t,p_list);
 
       return p;
     }
@@ -84,8 +92,43 @@ pcb_t* removeBlocked(int* semAdd)
 
 pcb_t* outBlocked(pcb_t* p)
 {
+  /* 
+   * come definito dal progetto, un semaforo è attivo se contiene almeno un
+   * processo nella s_procq
+   * se semd_h risulta vuota allora non eiste un semaforo contenente p in s_procq
+  */
+  if(list_empty(&semd_h))
+    return NULL;
+
+  struct list_head *iter;
+
+  //cerco nei semafori attivi quello con s_key == a p_semAdd
+  //se lo trovo lo rimuovo con la funzione già implementata in prc.c
+  list_for_each(iter, &semd_h)
+  {
+    semd_t *item=container_of(iter, semd_t, s_link);
+    if(*(item->s_key)==*(p->p_semAdd))
+    {
+      return outProcQ(&item->s_procq, p);
+    }
+
+    return NULL;
+  }
 }
 
 pcb_t* headBlocked(int* semAdd)
 {
+  struct list_head *iter;
+
+  list_for_each(iter, &semd_h)
+  {
+    semd_t *item=container_of(iter, semd_t, s_link);
+
+    if(*(item->s_key)==*semAdd)
+    {
+      return headProcQ(&item->s_procq);
+    }
+  }
+
+  return NULL;
 }

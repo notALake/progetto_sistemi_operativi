@@ -7,6 +7,7 @@
 
 #include "../../headers/listx.h"
 #include "../../headers/types.h"
+#include "./pcb.h"
 
 // Initialize the lists "semdFree_h" and "semd_h" and add all the elements of "semd_table" to "semdFree_h"
 void initASL();
