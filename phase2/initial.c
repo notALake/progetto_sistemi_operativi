@@ -1,5 +1,11 @@
 #include "./headers/initial.h"
 
+unsigned int processCount=0;
+unsigned int softBlockCount=0;
+struct list_head readyQueue;
+pcb_t *currentProcess=NULL;
+semd_t deviceSemaphores[16];
+
 extern void test();
 extern void uTLB_RefillHandler();
 

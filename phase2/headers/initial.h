@@ -9,11 +9,11 @@
 #include "./exceptions.h"
 #include <uriscv/liburiscv.h>
 
-static unsigned int processCount=0;
-static unsigned int softBlockCount=0;
-static struct list_head readyQueue;
-static pcb_t *currentProcess=NULL;
-static semd_t deviceSemaphores[16];
+extern unsigned int processCount;
+extern unsigned int softBlockCount;
+extern struct list_head readyQueue;
+extern pcb_t *currentProcess;
+extern semd_t deviceSemaphores[16];
 
 extern void test();
 extern void uTLB_RefillHandler();
