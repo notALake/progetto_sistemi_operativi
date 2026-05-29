@@ -1,5 +1,5 @@
-#ifndef FUNCTIONS
-#define FUNCTIONS
+#ifndef FUNCTIONS_PHASE2
+#define FUNCTIONS_PHASE2
 
 #include "../../headers/listx.h"
 #include "../../headers/types.h"

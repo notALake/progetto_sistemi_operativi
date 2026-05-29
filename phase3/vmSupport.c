@@ -1,12 +1,10 @@
 #include "./headers/vmSupport.h"
-#include "headers/const.h"
-#include <uriscv/const.h>
-#include <uriscv/liburiscv.h>
-#include <uriscv/types.h>
+
+extern swap_t swap_pool[POOLSIZE];
 
 //semaforo per avere mutua esclusione sull'accesso alla swap pool
-int swapPoolSemaphore = 1;
-static unsigned int frameIndex=0;
+extern int swapPoolSemaphore;
+static int frameIndex=0;
 
 void pager()
 {
@@ -26,16 +24,16 @@ void pager()
 
     SYSCALL(PASSEREN, (int)&swapPoolSemaphore, 0, 0);
 
-    int p = state->entry_hi >> ASIDSHIFT;
-    pteEntry_t page = sup->sup_privatePgTbl[p];
+    int p = findPageIndex( state->entry_hi);
+    pteEntry_t *page = &sup->sup_privatePgTbl[p];
 
-    swap_t *frame = (swap_t *)((memaddr *)(FRAMEPOOLSTART + POOLSIZE * pageReplacement()));
+    swap_t *frame = &swap_pool[pageReplacement()];
     
     if(frame->sw_asid == -1) //il frame è libero
     {
       frame->sw_asid = sup->sup_asid;
       frame->sw_pageNo = p;
-      frame->sw_pte = &page;
+      frame->sw_pte = page;
     }
     else //il frame è occupato
     {
@@ -64,13 +62,15 @@ void pager()
       //fine azione atomica
       
       //aggiorno il backing store del vecchio processo con il nuovo frame
-      //TODO AL MOMENTO QUESTO CODICE È ERRATO, NON SCRIVO SUL VECCHIO FLASH DEVICE
-      //MA SU QUELLO DEL CURRENT PROCESS
-      dtpreg_t *devReg = (dtpreg_t *)calcDevAddr(calcIntLineNo(cause));
+      unsigned int asid = (unsigned int)(ptu->pte_entryHI & 0x00000fff);
+      dtpreg_t *devReg =(dtpreg_t *) ((memaddr) DEV_REG_ADDR(IL_FLASH, asid-1));
       devReg->data0 = (memaddr) frame;
       SYSCALL(DOIO, (int)devReg->command, (int)FLASHWRITE, 0);
 
-
+      asid = (unsigned int)(page->pte_entryHI & 0x00000fff);
+      devReg =(dtpreg_t *) ((memaddr) DEV_REG_ADDR(IL_FLASH, asid-1));
+      devReg->data0 = (memaddr) frame;
+      SYSCALL(DOIO, (int)devReg->command, (int)FLASHREAD, 0);
     }
   }
 }

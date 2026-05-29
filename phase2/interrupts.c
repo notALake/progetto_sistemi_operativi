@@ -161,6 +161,8 @@ int calcIntLineNo(unsigned int cause)
       // imòossibile
       PANIC();
   }
+
+  return -1;
 }
 
 int calcDevNo(int IntlineNo)
@@ -188,6 +190,8 @@ int calcDevNo(int IntlineNo)
   else
     // non dovrebbe mai succedere questo case, ma se succede
     PANIC();
+
+  return -1;
 }
 
 memaddr calcDevAddr(int IntlineNo)
